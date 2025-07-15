@@ -12,6 +12,13 @@
     <link rel="stylesheet" href="{% static 'css/theme.css' %}">
     <link rel="stylesheet" href="{% static 'css/selectize-bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/microtip.min.css' %}">
+    {% if org.accent_color %}
+    <style>
+      :root {
+        --tblr-primary: {{ org.accent_color }};
+      }
+    </style>
+    {% endif %}
     {% block extra_css %}
     {% endblock %}
   </head>
