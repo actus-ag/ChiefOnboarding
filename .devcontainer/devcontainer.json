@@ -2,7 +2,7 @@
   "name": "ChiefOnboarding Development",
   "dockerComposeFile": ["docker-compose.yml"],
   "service": "web",
-  "workspaceFolder": "/app",
+  "workspaceFolder": "/workspaces/ChiefOnboarding",
   "shutdownAction": "stopCompose",
   "postCreateCommand": "chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
   "forwardPorts": [8000, 5432],
