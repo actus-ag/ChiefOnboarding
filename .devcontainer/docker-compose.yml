@@ -19,7 +19,7 @@ services:
     restart: always
     build:
       dockerfile: ./Dockerfile-dev
-      context: ./back/
+      context: ../back/
     ports:
       - "8000:8000"
     environment:
@@ -30,7 +30,7 @@ services:
       - ALLOWED_HOSTS=localhost,127.0.0.1,*.codespaces.dev,*.preview.app.github.dev
       - BASE_URL=http://localhost:8000
     volumes:
-      - ./back:/app
+      - ../back:/app
       - /app/node_modules
     depends_on:
       - db
