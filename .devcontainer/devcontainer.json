@@ -4,7 +4,7 @@
   "service": "web",
   "workspaceFolder": "/app",
   "shutdownAction": "stopCompose",
-  "postCreateCommand": "cp .env.example .env && python -c \"from django.core.management.utils import get_random_secret_key; import os; content = open('.env', 'r').read(); content = content.replace('your-unique-secret-key-here', get_random_secret_key()); open('.env', 'w').write(content)\" && python manage.py migrate && python manage.py collectstatic --noinput",
+  "postCreateCommand": "chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
   "forwardPorts": [8000, 5432],
   "portsAttributes": {
     "8000": {

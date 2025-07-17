@@ -14,20 +14,22 @@ This devcontainer configuration provides a complete development environment for 
 
 1. Open this repository in GitHub Codespaces or VS Code with the Dev Containers extension
 2. The container will automatically:
-   - Copy `.env.example` to `.env` for development configuration
-   - Generate a unique Django secret key for this instance
    - Build and start all services
+   - Generate a unique Django secret key for this instance
    - Run database migrations
    - Collect static files
 3. Once ready, the Django application will be available at `http://localhost:8000`
 
 ## Environment Configuration
 
-The devcontainer automatically creates a `.env` file from `.env.example` during setup and generates a unique secret key. For production use or custom development settings:
+The devcontainer automatically generates a unique Django secret key during setup. Environment variables are configured in `docker-compose.yml`:
 
-1. Copy `.env.example` to `.env` manually if needed
-2. The `SECRET_KEY` is automatically generated during devcontainer setup
-3. Modify other settings as needed for your environment
+- `DEBUG=True` - Development mode enabled
+- `SECRET_KEY` - Automatically generated unique key 
+- `DATABASE_URL` - PostgreSQL connection string
+- `ALLOWED_HOSTS` - Includes localhost and Codespaces domains
+
+For production deployment, you'll need to set these environment variables appropriately in your hosting environment.
 
 ## Services
 
