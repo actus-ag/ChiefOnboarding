@@ -13,8 +13,20 @@ This devcontainer configuration provides a complete development environment for 
 ## Getting Started
 
 1. Open this repository in GitHub Codespaces or VS Code with the Dev Containers extension
-2. The container will automatically build and start all services
+2. The container will automatically:
+   - Copy `.env.example` to `.env` for development configuration
+   - Build and start all services
+   - Run database migrations
+   - Collect static files
 3. Once ready, the Django application will be available at `http://localhost:8000`
+
+## Environment Configuration
+
+The devcontainer automatically creates a `.env` file from `.env.example` during setup. For production use or custom development settings:
+
+1. Copy `.env.example` to `.env` manually if needed
+2. Update `SECRET_KEY` with a unique value (generate with: `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`)
+3. Modify other settings as needed for your environment
 
 ## Services
 
