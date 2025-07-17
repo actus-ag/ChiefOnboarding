@@ -4,7 +4,7 @@
   "service": "web",
   "workspaceFolder": "/workspaces/ChiefOnboarding",
   "shutdownAction": "stopCompose",
-  "postCreateCommand": "chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
+  "postCreateCommand": "cd /app && chmod +x /workspaces/ChiefOnboarding/.devcontainer/setup.sh && /workspaces/ChiefOnboarding/.devcontainer/setup.sh",
   "forwardPorts": [8000, 5432],
   "portsAttributes": {
     "8000": {
