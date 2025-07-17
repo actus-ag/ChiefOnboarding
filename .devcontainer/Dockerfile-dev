@@ -1,0 +1,42 @@
+FROM python:3.11
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    supervisor \
+    gettext \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create directories for supervisor
+RUN mkdir -p /var/run/supervisord /var/log/supervisord
+
+# Install Python dependencies
+RUN python -m pip install pipenv
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# Create app directory
+RUN mkdir -p /app
+WORKDIR /app
+
+# Copy requirements and install dependencies
+COPY Pipfile Pipfile.lock ./
+RUN pipenv install --system --dev
+
+# Copy application code
+COPY . .
+
+# Compile translations
+RUN django-admin compilemessages
+
+# Copy supervisor configuration
+COPY supervisord-dev.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Expose port
+EXPOSE 8000
+
+# Start supervisor
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
