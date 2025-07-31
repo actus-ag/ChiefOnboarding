@@ -3,14 +3,23 @@ RUN apt-get update
 RUN mkdir /var/run/supervisord
 RUN mkdir /var/log/supervisord
 RUN apt-get install -y supervisor gettext
-RUN python -m pip install pipenv 
+
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 ENV PYTHONUNBUFFERED 1
 RUN mkdir -p /app
 WORKDIR /app
+
+# Copy project files and install dependencies (including dev)
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --compile-bytecode
+
+# Copy application code
 COPY . .
 COPY ./supervisord-dev.conf /etc/supervisor/conf.d/supervisord.conf
-RUN pipenv install --system --dev
-RUN django-admin compilemessages 
+
+# Compile translations
+RUN uv run django-admin compilemessages 
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

@@ -1,3 +1,3 @@
-release: python back/manage.py createcachetable && python back/manage.py migrate
-web: gunicorn --chdir back back.wsgi
-worker: python back/manage.py qcluster
+release: uv run python back/manage.py createcachetable && uv run python back/manage.py migrate
+web: uv run gunicorn --chdir back back.wsgi
+worker: uv run python back/manage.py qcluster

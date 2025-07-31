@@ -20,7 +20,7 @@ build:
 	docker compose build web
 
 lock:
-	docker compose run --rm web pipenv lock
+	uv lock
 
 format:
 	docker compose run --rm web ruff format .

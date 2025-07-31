@@ -37,7 +37,7 @@ services:
       - db
     networks:
       - global
-    command: python manage.py runserver 0.0.0.0:8000
+    command: uv run python manage.py runserver 0.0.0.0:8000
 
 volumes:
   pgdata:
