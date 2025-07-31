@@ -50,8 +50,14 @@ python manage.py loaddata welcome_message.json
 
 ```bash
 cd back
-django-admin compilemessages
+# Extract new translatable strings and update .po files
+python manage.py makemessages -l de
+
+# Compile .po files to .mo files (required after any translation changes)
+python manage.py compilemessages
 ```
+
+**Important**: `.mo` files are not automatically updated and must be compiled manually after any changes to `.po` files. They are not version controlled (in .gitignore).
 
 ## Code Style
 

@@ -22,14 +22,14 @@ class InitalAdminAccountForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
-            HTML("<h2>Organization</h2>"),
+            HTML("<h2>{}</h2>".format(_("Organization"))),
             Div(
                 Div(Field("name"), css_class="col-12"),
                 Div(Field("timezone"), css_class="col-12"),
                 Div(Field("language"), css_class="col-12"),
                 css_class="row",
             ),
-            HTML("<h2>Account</h2>"),
+            HTML("<h2>{}</h2>".format(_("Account"))),
             Div(
                 Div(Field("first_name"), css_class="col-6"),
                 Div(Field("last_name"), css_class="col-6"),
@@ -41,7 +41,7 @@ class InitalAdminAccountForm(UserCreationForm):
                 Div(Field("password2"), css_class="col-12"),
                 css_class="row",
             ),
-            Submit(name="submit", value="Submit"),
+            Submit(name="submit", value=_("Submit")),
         )
 
     class Meta:
