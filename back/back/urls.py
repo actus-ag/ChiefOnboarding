@@ -51,6 +51,8 @@ urlpatterns = [
     path("admin/sequences/", include(sequences_urls)),
     path("api/slack/", include(slack_urls)),
     path("admin/integrations/", include(integrations_urls)),
+    # MCP Server
+    path("mcp/", include("mcp_server.urls")),
 ]
 
 # API

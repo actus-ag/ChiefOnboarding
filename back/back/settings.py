@@ -93,6 +93,8 @@ INSTALLED_APPS = [
     "anymail",
     "django_q",
     "crispy_forms",
+    # mcp
+    "mcp_server",
 ]
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
