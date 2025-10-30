@@ -32,25 +32,26 @@ services:
     name: Django Development Server
     description: Django web application with hot reload
     triggeredBy:
-      - manual
+      - postDevcontainerStart
     commands:
       start: |
-        cd back && \
-        source .venv/bin/activate && \
-        python manage.py runserver 0.0.0.0:8000
+        export PATH="/home/vscode/.local/bin:$PATH" && \
+        uv run python back/manage.py runserver 0.0.0.0:8000
       ready: |
         timeout 60 bash -c 'until curl -s http://localhost:8000 > /dev/null; do sleep 1; done'
 
 tasks:
   install-dependencies:
     name: Install Python Dependencies
-    description: Install Python packages using pipenv
+    description: Install Python packages using uv
     triggeredBy:
       - postDevcontainerStart
     command: |
-      cd back && \
-      pip install --upgrade pip pipenv && \
-      pipenv install --dev
+      export PATH="/home/vscode/.local/bin:$PATH" && \
+      if ! command -v uv &> /dev/null; then
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+      fi && \
+      uv sync
 
   setup-database:
     name: Setup Database
@@ -60,9 +61,9 @@ tasks:
     dependsOn:
       - install-dependencies
     command: |
-      cd back && \
-      pipenv run python manage.py migrate && \
-      pipenv run python manage.py collectstatic --noinput
+      export PATH="/home/vscode/.local/bin:$PATH" && \
+      uv run python back/manage.py migrate && \
+      uv run python back/manage.py collectstatic --noinput
 
   create-superuser:
     name: Create Django Superuser
@@ -70,8 +71,8 @@ tasks:
     triggeredBy:
       - manual
     command: |
-      cd back && \
-      pipenv run python manage.py createsuperuser
+      export PATH="/home/vscode/.local/bin:$PATH" && \
+      uv run python back/manage.py createsuperuser
 
   run-tests:
     name: Run Tests
@@ -79,8 +80,8 @@ tasks:
     triggeredBy:
       - manual
     command: |
-      cd back && \
-      pipenv run pytest
+      export PATH="/home/vscode/.local/bin:$PATH" && \
+      uv run pytest back
 
   lint:
     name: Lint Code
@@ -88,8 +89,8 @@ tasks:
     triggeredBy:
       - manual
     command: |
-      cd back && \
-      pipenv run ruff check .
+      export PATH="/home/vscode/.local/bin:$PATH" && \
+      uv run ruff check back
 
   format:
     name: Format Code
@@ -97,5 +98,5 @@ tasks:
     triggeredBy:
       - manual
     command: |
-      cd back && \
-      pipenv run ruff format .
+      export PATH="/home/vscode/.local/bin:$PATH" && \
+      uv run ruff format back
