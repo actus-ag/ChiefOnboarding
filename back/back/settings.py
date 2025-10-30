@@ -264,7 +264,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "de"
 
 TIME_ZONE = "UTC"
 
@@ -452,15 +452,7 @@ STORAGES = {
 
 # Languages
 LANGUAGES = [
-    ("en", _("English")),
-    ("nl", _("Dutch")),
-    ("fr", _("French")),
     ("de", _("German")),
-    ("tr", _("Turkish")),
-    ("pt", _("Portuguese")),
-    ("jp", _("Japanese")),
-    ("es", _("Spanish")),
-    ("cs", _("Czech")),
 ]
 LANGUAGE_SESSION_KEY = "chief-language"
 SITE_ROOT = os.path.dirname(os.path.realpath(__name__))

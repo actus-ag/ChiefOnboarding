@@ -5,10 +5,16 @@
 <style>
   /* the button would be blank without this as the org (which defines the color) is not created yet */
   .btn-primary, .btn-outline-primary, .btn-ghost-primary, .btn-primary:hover, .btn-outline-primary:hover, .btn-ghost-primary:hover, .border-primary {
-    --tblr-primary: rgb(153, 131, 92);
-    --tblr-btn-hover-bg: rgb(153, 131, 92);
-    --tblr-primary-rgb: rgb(153, 131, 92);
-    --tblr-primary-darker: rgb(153, 131, 92);
+    --tblr-primary: rgb(152, 213, 181);
+    --tblr-btn-hover-bg: rgb(130, 195, 163);
+    --tblr-primary-rgb: 152, 213, 181;
+    --tblr-primary-darker: rgb(130, 195, 163);
+    background-color: rgb(152, 213, 181) !important;
+    border-color: rgb(152, 213, 181) !important;
+  }
+  .btn-primary:hover, .btn-outline-primary:hover {
+    background-color: rgb(130, 195, 163) !important;
+    border-color: rgb(130, 195, 163) !important;
   }
 </style>
 {% endblock %}
