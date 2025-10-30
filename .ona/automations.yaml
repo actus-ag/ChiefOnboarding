@@ -50,7 +50,7 @@ tasks:
     command: |
       cd back && \
       pip install --upgrade pip pipenv && \
-      pipenv install --dev --deploy
+      pipenv install --dev
 
   setup-database:
     name: Setup Database
