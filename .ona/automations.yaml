@@ -36,6 +36,12 @@ services:
     commands:
       start: |
         export PATH="/home/vscode/.local/bin:$PATH" && \
+        echo "Installing dependencies..." && \
+        if ! command -v uv &> /dev/null; then
+          curl -LsSf https://astral.sh/uv/install.sh | sh && \
+          export PATH="/home/vscode/.local/bin:$PATH"
+        fi && \
+        uv sync && \
         echo "Setting up database..." && \
         if [ ! -f back/.env ]; then \
           echo "Creating .env file from .env.example..." && \
