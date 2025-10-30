@@ -1,0 +1,101 @@
+services:
+  postgres:
+    name: PostgreSQL Database
+    description: PostgreSQL database for ChiefOnboarding
+    triggeredBy:
+      - postDevcontainerStart
+    commands:
+      start: |
+        docker run --rm --name chiefonboarding-postgres \
+          -e POSTGRES_DB=chiefonboarding \
+          -e POSTGRES_USER=postgres \
+          -e POSTGRES_PASSWORD=postgres \
+          -p 5432:5432 \
+          postgres:16
+      ready: |
+        timeout 60 bash -c 'until docker exec chiefonboarding-postgres pg_isready -U postgres; do sleep 1; done'
+
+  redis:
+    name: Redis Cache
+    description: Redis for caching and background tasks
+    triggeredBy:
+      - postDevcontainerStart
+    commands:
+      start: |
+        docker run --rm --name chiefonboarding-redis \
+          -p 6379:6379 \
+          redis:7-alpine
+      ready: |
+        timeout 30 bash -c 'until docker exec chiefonboarding-redis redis-cli ping | grep -q PONG; do sleep 1; done'
+
+  django:
+    name: Django Development Server
+    description: Django web application with hot reload
+    triggeredBy:
+      - manual
+    commands:
+      start: |
+        cd back && \
+        source .venv/bin/activate && \
+        python manage.py runserver 0.0.0.0:8000
+      ready: |
+        timeout 60 bash -c 'until curl -s http://localhost:8000 > /dev/null; do sleep 1; done'
+
+tasks:
+  install-dependencies:
+    name: Install Python Dependencies
+    description: Install Python packages using pipenv
+    triggeredBy:
+      - postDevcontainerStart
+    command: |
+      cd back && \
+      pip install --upgrade pip pipenv && \
+      pipenv install --dev --deploy
+
+  setup-database:
+    name: Setup Database
+    description: Run migrations and create initial data
+    triggeredBy:
+      - manual
+    dependsOn:
+      - install-dependencies
+    command: |
+      cd back && \
+      pipenv run python manage.py migrate && \
+      pipenv run python manage.py collectstatic --noinput
+
+  create-superuser:
+    name: Create Django Superuser
+    description: Create an admin user for Django
+    triggeredBy:
+      - manual
+    command: |
+      cd back && \
+      pipenv run python manage.py createsuperuser
+
+  run-tests:
+    name: Run Tests
+    description: Run the test suite
+    triggeredBy:
+      - manual
+    command: |
+      cd back && \
+      pipenv run pytest
+
+  lint:
+    name: Lint Code
+    description: Run ruff linter
+    triggeredBy:
+      - manual
+    command: |
+      cd back && \
+      pipenv run ruff check .
+
+  format:
+    name: Format Code
+    description: Format code with ruff
+    triggeredBy:
+      - manual
+    command: |
+      cd back && \
+      pipenv run ruff format .

@@ -1,0 +1,62 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Django",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/back/manage.py",
+      "args": [
+        "runserver",
+        "0.0.0.0:8000",
+        "--noreload"
+      ],
+      "django": true,
+      "justMyCode": false,
+      "cwd": "${workspaceFolder}/back",
+      "env": {
+        "DEBUG": "True",
+        "DJANGO_SETTINGS_MODULE": "back.settings"
+      }
+    },
+    {
+      "name": "Python: Django (with reload)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/back/manage.py",
+      "args": [
+        "runserver",
+        "0.0.0.0:8000"
+      ],
+      "django": true,
+      "justMyCode": false,
+      "cwd": "${workspaceFolder}/back",
+      "env": {
+        "DEBUG": "True",
+        "DJANGO_SETTINGS_MODULE": "back.settings"
+      }
+    },
+    {
+      "name": "Python: Current File",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/back",
+      "justMyCode": false
+    },
+    {
+      "name": "Python: Django Tests",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/back/manage.py",
+      "args": [
+        "test",
+        "--keepdb"
+      ],
+      "django": true,
+      "justMyCode": false,
+      "cwd": "${workspaceFolder}/back"
+    }
+  ]
+}
