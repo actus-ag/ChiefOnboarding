@@ -32,6 +32,9 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", default=False)
 
+# Development auto-login (only works when DEBUG=True)
+DEV_AUTO_LOGIN = env.bool("DEV_AUTO_LOGIN", default=False)
+
 if env("ALLOWED_HOSTS", default="") != "":
     ALLOWED_HOSTS = [host for host in env.list("ALLOWED_HOSTS")]
 else:
@@ -192,6 +195,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "organization.middleware.DevAutoLoginMiddleware",
     "django.contrib.auth.middleware.LoginRequiredMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",

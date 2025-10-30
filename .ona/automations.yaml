@@ -51,11 +51,8 @@ services:
         uv run python back/manage.py migrate && \
         echo "Collecting static files..." && \
         uv run python back/manage.py collectstatic --noinput && \
-        echo "Creating superuser..." && \
-        DJANGO_SUPERUSER_USERNAME=admin \
-        DJANGO_SUPERUSER_EMAIL=admin@example.com \
-        DJANGO_SUPERUSER_PASSWORD=admin \
-        uv run python back/manage.py createsuperuser --noinput || echo "Superuser already exists" && \
+        echo "Setting up development environment..." && \
+        uv run python back/manage.py setup_dev_environment && \
         echo "Database ready, starting Django server..." && \
         gitpod environment port open --name django 8000 && \
         uv run python back/manage.py runserver 0.0.0.0:8000
@@ -63,18 +60,6 @@ services:
         timeout 60 bash -c 'until curl -s http://localhost:8000 > /dev/null; do sleep 1; done'
 
 tasks:
-  install-dependencies:
-    name: Install Python Dependencies
-    description: Install Python packages using uv
-    triggeredBy:
-      - postDevcontainerStart
-    command: |
-      export PATH="/home/vscode/.local/bin:$PATH" && \
-      if ! command -v uv &> /dev/null; then
-        curl -LsSf https://astral.sh/uv/install.sh | sh
-      fi && \
-      uv sync
-
   run-tests:
     name: Run Tests
     description: Run the test suite
