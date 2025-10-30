@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
@@ -7,15 +8,15 @@ from django.views.generic.detail import BaseDetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 
-from users.mixins import LoginRequiredMixin, ManagerPermMixin
+from users.mixins import AdminOrManagerPermMixin
 
 from .forms import AdminTaskCommentForm, AdminTaskCreateForm, AdminTaskUpdateForm
 from .models import AdminTask, AdminTaskComment
 
 
-class MyAdminTasksListView(LoginRequiredMixin, ManagerPermMixin, ListView):
+class MyAdminTasksListView(AdminOrManagerPermMixin, ListView):
     template_name = "admin_tasks_yours.html"
-    paginate_by = 10
+    paginate_by = settings.ADMINTASK_PAGINATE_BY
 
     def get_queryset(self):
         return AdminTask.objects.filter(assigned_to=self.request.user).select_related(
@@ -30,9 +31,9 @@ class MyAdminTasksListView(LoginRequiredMixin, ManagerPermMixin, ListView):
         return context
 
 
-class AllAdminTasksListView(LoginRequiredMixin, ManagerPermMixin, ListView):
+class AllAdminTasksListView(AdminOrManagerPermMixin, ListView):
     template_name = "admin_tasks_all.html"
-    paginate_by = 10
+    paginate_by = settings.ADMINTASK_PAGINATE_BY
 
     def get_queryset(self):
         return AdminTask.objects.all().select_related("new_hire", "assigned_to")
@@ -45,7 +46,7 @@ class AllAdminTasksListView(LoginRequiredMixin, ManagerPermMixin, ListView):
         return context
 
 
-class AdminTaskCompleteView(LoginRequiredMixin, ManagerPermMixin, BaseDetailView):
+class AdminTaskCompleteView(AdminOrManagerPermMixin, BaseDetailView):
     model = AdminTask
 
     def post(self, request, *args, **kwargs):
@@ -54,9 +55,7 @@ class AdminTaskCompleteView(LoginRequiredMixin, ManagerPermMixin, BaseDetailView
         return redirect("admin_tasks:detail", pk=admin_task.id)
 
 
-class AdminTasksCreateView(
-    LoginRequiredMixin, ManagerPermMixin, SuccessMessageMixin, CreateView
-):
+class AdminTasksCreateView(AdminOrManagerPermMixin, SuccessMessageMixin, CreateView):
     template_name = "admin_tasks_create.html"
     form_class = AdminTaskCreateForm
     model = AdminTask
@@ -85,9 +84,7 @@ class AdminTasksCreateView(
         return context
 
 
-class AdminTasksUpdateView(
-    LoginRequiredMixin, ManagerPermMixin, SuccessMessageMixin, UpdateView
-):
+class AdminTasksUpdateView(AdminOrManagerPermMixin, SuccessMessageMixin, UpdateView):
     template_name = "admin_tasks_detail.html"
     form_class = AdminTaskUpdateForm
     model = AdminTask
@@ -118,7 +115,7 @@ class AdminTasksUpdateView(
 
 
 class AdminTasksCommentCreateView(
-    LoginRequiredMixin, ManagerPermMixin, SuccessMessageMixin, CreateView
+    AdminOrManagerPermMixin, SuccessMessageMixin, CreateView
 ):
     template_name = "admin_tasks_detail.html"
     model = AdminTaskComment

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
@@ -6,13 +7,13 @@ from django.views.generic.list import ListView
 
 from admin.hardware.forms import HardwareForm
 from admin.hardware.models import Hardware
-from users.mixins import LoginRequiredMixin, ManagerPermMixin
+from users.mixins import AdminOrManagerPermMixin
 
 
-class HardwareListView(LoginRequiredMixin, ManagerPermMixin, ListView):
+class HardwareListView(AdminOrManagerPermMixin, ListView):
     template_name = "templates.html"
     queryset = Hardware.templates.all().order_by("name").defer("content")
-    paginate_by = 10
+    paginate_by = settings.HARDWARE_PAGINATE_BY
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -22,9 +23,7 @@ class HardwareListView(LoginRequiredMixin, ManagerPermMixin, ListView):
         return context
 
 
-class HardwareCreateView(
-    LoginRequiredMixin, ManagerPermMixin, SuccessMessageMixin, CreateView
-):
+class HardwareCreateView(AdminOrManagerPermMixin, SuccessMessageMixin, CreateView):
     template_name = "template_update.html"
     form_class = HardwareForm
     success_url = reverse_lazy("hardware:list")
@@ -37,9 +36,7 @@ class HardwareCreateView(
         return context
 
 
-class HardwareUpdateView(
-    LoginRequiredMixin, ManagerPermMixin, SuccessMessageMixin, UpdateView
-):
+class HardwareUpdateView(AdminOrManagerPermMixin, SuccessMessageMixin, UpdateView):
     template_name = "template_update.html"
     form_class = HardwareForm
     success_url = reverse_lazy("hardware:list")
@@ -53,9 +50,7 @@ class HardwareUpdateView(
         return context
 
 
-class HardwareDeleteView(
-    LoginRequiredMixin, ManagerPermMixin, SuccessMessageMixin, DeleteView
-):
+class HardwareDeleteView(AdminOrManagerPermMixin, SuccessMessageMixin, DeleteView):
     queryset = Hardware.objects.all()
     success_url = reverse_lazy("hardware:list")
     success_message = _("Hardware item has been removed")

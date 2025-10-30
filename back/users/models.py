@@ -1,7 +1,5 @@
-import uuid
 from datetime import datetime, timedelta
 
-import pyotp
 import pytz
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -25,7 +23,6 @@ from admin.preboarding.models import Preboarding
 from admin.resources.models import CourseAnswer, Resource
 from admin.sequences.models import Condition
 from admin.to_do.models import ToDo
-from misc.fernet_fields import EncryptedTextField
 from misc.models import File
 from organization.models import Notification
 from slack_bot.utils import Slack, paragraph
@@ -49,6 +46,18 @@ class CustomUserManager(BaseUserManager):
     def get_by_natural_key(self, email):
         # Make validation case sensitive
         return self.get(**{self.model.USERNAME_FIELD + "__iexact": email})
+
+    def make_random_password(
+        self,
+        length=10,
+        allowed_chars="abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789",
+    ):
+        """
+        Generate a random password with the given length and given
+        allowed_chars. The default value of allowed_chars does not have "I" or
+        "O" or letters and digits that look similar -- just to avoid confusion.
+        """
+        return get_random_string(length, allowed_chars)
 
 
 class ManagerSlackManager(models.Manager):
@@ -165,8 +174,6 @@ class User(AbstractBaseUser):
     is_active = models.BooleanField(default=True)
     is_introduced_to_colleagues = models.BooleanField(default=False)
     sent_preboarding_details = models.BooleanField(default=False)
-    totp_secret = EncryptedTextField(blank=True)
-    requires_otp = models.BooleanField(default=False)
     seen_updates = models.DateTimeField(auto_now_add=True)
     # new hire specific
     completed_tasks = models.IntegerField(default=0)
@@ -237,7 +244,7 @@ class User(AbstractBaseUser):
     class Meta:
         constraints = [
             CheckConstraint(
-                check=~Q(unique_url=""),
+                condition=~Q(unique_url=""),
                 name="unique_url_not_empty",
             )
         ]
@@ -406,7 +413,6 @@ class User(AbstractBaseUser):
     def save(self, *args, **kwargs):
         self.email = self.email.lower()
         if not self.pk:
-            self.totp_secret = pyotp.random_base32()
             while True:
                 unique_string = get_random_string(length=8)
                 if not User.objects.filter(unique_url=unique_string).exists():
@@ -572,23 +578,6 @@ class User(AbstractBaseUser):
             items[integration.name] = integration.user_exists(self)
 
         return items
-
-    def reset_otp_recovery_keys(self):
-        self.user_otp.all().delete()
-        newItems = [OTPRecoveryKey(user=self) for x in range(10)]
-        OTPRecoveryKey.objects.bulk_create(newItems)
-        return self.user_otp.all().values_list("key", flat=True)
-
-    def check_otp_recovery_key(self, totp_input):
-        otp_recovery_key = None
-        for i in OTPRecoveryKey.objects.filter(is_used=False, user=self):
-            if i.key == totp_input:
-                otp_recovery_key = i
-                break
-        if otp_recovery_key is not None:
-            otp_recovery_key.is_used = True
-            otp_recovery_key.save()
-        return otp_recovery_key
 
     @property
     def is_admin_or_manager(self):
@@ -849,11 +838,3 @@ class IntegrationUser(models.Model):
             user.save()
 
         return integration_user
-
-
-class OTPRecoveryKey(models.Model):
-    user = models.ForeignKey(
-        get_user_model(), related_name="user_otp", on_delete=models.CASCADE
-    )
-    key = EncryptedTextField(default=uuid.uuid4)
-    is_used = models.BooleanField(default=False)

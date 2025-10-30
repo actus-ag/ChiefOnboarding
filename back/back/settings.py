@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import sys
+from ast import literal_eval
 
 import environ
 from django.utils.translation import gettext_lazy as _
@@ -65,7 +66,6 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     "users",
     "organization",
-    "user_auth",
     "misc",
     "back",
     # admin
@@ -95,17 +95,85 @@ INSTALLED_APPS = [
     "crispy_forms",
     # mcp
     "mcp_server",
+    # allauth
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
 ]
+
+# custom
+ALLOW_LOGIN_WITH_CREDENTIALS = env.bool("ALLOW_LOGIN_WITH_CREDENTIALS", True)
+# allauth
+SOCIALACCOUNT_ONLY = not ALLOW_LOGIN_WITH_CREDENTIALS
+
+if ALLOW_LOGIN_WITH_CREDENTIALS:
+    INSTALLED_APPS += ["allauth.mfa"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
-# Login Defaults
+# ALLAUTH config
+ACCOUNT_ADAPTER = "users.adapter.UserAdapter"
+SOCIALACCOUNT_ADAPTER = "users.adapter.SocialAccountAdapter"
+MFA_ADAPTER = "users.adapter.MFAAdapter"
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_SIGNUP_FIELDS = [
+    "email*",
+    "password1*",
+    "password2*",
+]  # not used, but needed for allauth
+# We don't allow signups, so this is not necessary
+ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_MAX_EMAIL_ADDRESSES = 1
+ACCOUNT_PRESERVE_USERNAME_CASING = False  # lowercases username (email) value
+ACCOUNT_SESSION_REMEMBER = True
+ACCOUNT_USER_MODEL_USERNAME_FIELD = "email"
+MFA_TOTP_ISSUER = env("CHIEFONBOARDING_NAME", default="ChiefOnboarding")
+# social
+SOCIALACCOUNT_AUTO_SIGNUP = env.bool("SSO_AUTO_CREATE_USER", default=False)
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
+SOCIALACCOUNT_EMAIL_REQUIRED = True
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+
+SOCIALACCOUNT_PROVIDERS = literal_eval(env("SSO_PROVIDERS", default="{}"))
+ALLAUTH_PROVIDERS = env.list("ALLAUTH_PROVIDERS", default=[])
+if ALLAUTH_PROVIDERS:
+    for provider in ALLAUTH_PROVIDERS:
+        INSTALLED_APPS += ["allauth.socialaccount.providers." + provider]
+
+
+if env.bool("ALLOW_GOOGLE_SSO", False):
+    INSTALLED_APPS += ["allauth.socialaccount.providers.google"]
+    SOCIALACCOUNT_PROVIDERS["google"] = {
+        "APPS": [
+            {
+                "client_id": env.str("GOOGLE_SSO_CLIENT_ID", ""),
+                "secret": env.str("GOOGLE_SSO_SECRET", ""),
+                "key": "",
+            },
+        ],
+        "AUTH_PARAMS": {
+            "access_type": "offline",
+        },
+        "OAUTH_PKCE_ENABLED": True,
+    }
+
+OIDC_ROLE_PATH_IN_RETURN = env("OIDC_ROLE_PATH_IN_RETURN", default="")
+OIDC_ROLE_ADMIN_PATTERN = env("OIDC_ROLE_ADMIN_PATTERN", default="^cn=Administrators.*")
+OIDC_ROLE_MANAGER_PATTERN = env("OIDC_ROLE_MANAGER_PATTERN", default="^cn=Managers.*")
+OIDC_ROLE_NEW_HIRE_PATTERN = env("OIDC_ROLE_NEW_HIRE_PATTERN", default="^cn=Newhires.*")
+
+if env("OIDC_CLIENT_ID", default="") != "":
+    # for migration/legacy purposes. Make sure everyone migrates to the allauth setup
+    raise Exception("You need to configure OIDC differently. Please read the docs")
+
+
+# DJANGO login config
 LOGIN_REDIRECT_URL = "logged_in_user_redirect"
-LOGOUT_REDIRECT_URL = "login"
-LOGIN_URL = "login"
+LOGOUT_REDIRECT_URL = "account_login"
+LOGIN_URL = "account_login"
 
 RUNNING_TESTS = "pytest" in sys.modules
 FAKE_SLACK_API = False
@@ -122,13 +190,16 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "organization.middleware.HealthCheckMiddleware",
+    "organization.middleware.SetupOrgMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.auth.middleware.LoginRequiredMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "users.middleware.language_middleware",
     "axes.middleware.AxesMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 # Django Debug Bar
@@ -323,6 +394,8 @@ AUTHENTICATION_BACKENDS = [
     "axes.backends.AxesBackend",
     # Django ModelBackend is the default authentication backend.
     "django.contrib.auth.backends.ModelBackend",
+    # `allauth` specific authentication methods, such as login by email
+    "allauth.account.auth_backends.AuthenticationBackend",
 ]
 AXES_ENABLED = env.bool("AXES_ENABLED", default=True)
 AXES_FAILURE_LIMIT = env.int("AXES_FAILURE_LIMIT", default=10)
@@ -364,6 +437,7 @@ if not env.bool("DEBUG", default=False) and not env.bool(
 ):
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+    ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
 
 FIXTURE_DIRS = ["fixtures"]
 
@@ -418,22 +492,19 @@ if env.bool("DEBUG_LOGGING", default=False):
         },
     }
 
-
-# OIDC
-OIDC_LOGIN_DISPLAY = env("OIDC_LOGIN_DISPLAY", default="Custom-OIDC")
-OIDC_CLIENT_ID = env("OIDC_CLIENT_ID", default="")
-OIDC_CLIENT_SECRET = env("OIDC_CLIENT_SECRET", default="")
-OIDC_AUTHORIZATION_URL = env("OIDC_AUTHORIZATION_URL", default="")
-OIDC_TOKEN_URL = env("OIDC_TOKEN_URL", default="")
-OIDC_USERINFO_URL = env("OIDC_USERINFO_URL", default="")
-OIDC_SCOPES = env("OIDC_SCOPES", default="openid email name profile")
-OIDC_LOGOUT_URL = env("OIDC_LOGOUT_URL", default="")
-OIDC_FORCE_AUTHN = env.bool("OIDC_FORCE_AUTHN", default=False)
-OIDC_ROLE_ADMIN_PATTERN = env("OIDC_ROLE_ADMIN_PATTERN", default="^cn=Administrators.*")
-OIDC_ROLE_MANAGER_PATTERN = env("OIDC_ROLE_MANAGER_PATTERN", default="^cn=Managers.*")
-OIDC_ROLE_NEW_HIRE_PATTERN = env("OIDC_ROLE_NEW_HIRE_PATTERN", default="^cn=Newhires.*")
-OIDC_ROLE_DEFAULT = env.int("OIDC_DEFAULT_ROLE", "3")
-OIDC_ROLE_UPDATING = env.bool("OIDC_ROLE_UPDATING", True)
-OIDC_ROLE_PATH_IN_RETURN = env("OIDC_ROLE_PATH_IN_RETURN", default="zoneinfo").split(
-    "."
+# paginate by
+DEFAULT_PAGINATE_BY = env.int("DEFAULT_PAGINATE_BY", 10)
+ADMINTASK_PAGINATE_BY = env.int("ADMINTASK_PAGINATE_BY", DEFAULT_PAGINATE_BY)
+APPOINTMENT_PAGINATE_BY = env.int("APPOINTMENT_PAGINATE_BY", DEFAULT_PAGINATE_BY)
+BADGE_PAGINATE_BY = env.int("BADGE_PAGINATE_BY", DEFAULT_PAGINATE_BY)
+HARDWARE_PAGINATE_BY = env.int("HARDWARE_PAGINATE_BY", DEFAULT_PAGINATE_BY)
+INTRO_PAGINATE_BY = env.int("INTRO_PAGINATE_BY", DEFAULT_PAGINATE_BY)
+NEW_HIRE_PAGINATE_BY = env.int("NEW_HIRE_PAGINATE_BY", DEFAULT_PAGINATE_BY)
+OFFBOARDING_USERS_PAGINATE_BY = env.int(
+    "OFFBOARDING_USERS_PAGINATE_BY", DEFAULT_PAGINATE_BY
 )
+COLLEAGUE_PAGINATE_BY = env.int("COLLEAGUE_PAGINATE_BY", DEFAULT_PAGINATE_BY)
+PREBOARDING_PAGINATE_BY = env.int("PREBOARDING_PAGINATE_BY", DEFAULT_PAGINATE_BY)
+RESOURCE_PAGINATE_BY = env.int("RESOURCE_PAGINATE_BY", DEFAULT_PAGINATE_BY)
+SEQUENCE_PAGINATE_BY = env.int("SEQUENCE_PAGINATE_BY", DEFAULT_PAGINATE_BY)
+TODO_PAGINATE_BY = env.int("TODO_PAGINATE_BY", DEFAULT_PAGINATE_BY)

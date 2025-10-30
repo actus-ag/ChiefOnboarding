@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
@@ -5,17 +6,17 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
-from users.mixins import LoginRequiredMixin, ManagerPermMixin
+from users.mixins import AdminOrManagerPermMixin
 from users.models import User
 
 from .forms import IntroductionForm
 from .models import Introduction
 
 
-class IntroductionListView(LoginRequiredMixin, ManagerPermMixin, ListView):
+class IntroductionListView(AdminOrManagerPermMixin, ListView):
     template_name = "templates.html"
     queryset = Introduction.templates.all().order_by("name")
-    paginate_by = 10
+    paginate_by = settings.INTRO_PAGINATE_BY
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -25,9 +26,7 @@ class IntroductionListView(LoginRequiredMixin, ManagerPermMixin, ListView):
         return context
 
 
-class IntroductionCreateView(
-    LoginRequiredMixin, ManagerPermMixin, SuccessMessageMixin, CreateView
-):
+class IntroductionCreateView(AdminOrManagerPermMixin, SuccessMessageMixin, CreateView):
     template_name = "intro_update.html"
     form_class = IntroductionForm
     success_url = reverse_lazy("introductions:list")
@@ -40,9 +39,7 @@ class IntroductionCreateView(
         return context
 
 
-class IntroductionColleaguePreviewView(
-    LoginRequiredMixin, ManagerPermMixin, DetailView
-):
+class IntroductionColleaguePreviewView(AdminOrManagerPermMixin, DetailView):
     template_name = "_colleague_intro.html"
     model = User
 
@@ -52,9 +49,7 @@ class IntroductionColleaguePreviewView(
         return context
 
 
-class IntroductionUpdateView(
-    LoginRequiredMixin, ManagerPermMixin, SuccessMessageMixin, UpdateView
-):
+class IntroductionUpdateView(AdminOrManagerPermMixin, SuccessMessageMixin, UpdateView):
     template_name = "intro_update.html"
     form_class = IntroductionForm
     success_url = reverse_lazy("introductions:list")
@@ -68,9 +63,7 @@ class IntroductionUpdateView(
         return context
 
 
-class IntroductionDeleteView(
-    LoginRequiredMixin, ManagerPermMixin, SuccessMessageMixin, DeleteView
-):
+class IntroductionDeleteView(AdminOrManagerPermMixin, SuccessMessageMixin, DeleteView):
     queryset = Introduction.objects.all()
     success_url = reverse_lazy("introductions:list")
     success_message = _("Introduction item has been removed")

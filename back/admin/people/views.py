@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import Http404, HttpResponse
@@ -30,10 +31,9 @@ from organization.models import Organization, WelcomeMessage
 from slack_bot.utils import Slack, actions, button, paragraph
 from users.emails import email_new_admin_cred
 from users.mixins import (
+    AdminOrManagerPermMixin,
     AdminPermMixin,
     IsAdminOrNewHireManagerMixin,
-    LoginRequiredMixin,
-    ManagerPermMixin,
 )
 from users.models import ToDoUser
 
@@ -48,10 +48,10 @@ from .forms import (
 # See new_hire_views.py for new hire functions!
 
 
-class ColleagueListView(LoginRequiredMixin, ManagerPermMixin, ListView):
+class ColleagueListView(AdminOrManagerPermMixin, ListView):
     template_name = "colleagues.html"
     queryset = get_user_model().objects.all()
-    paginate_by = 20
+    paginate_by = settings.COLLEAGUE_PAGINATE_BY
     ordering = ["first_name", "last_name"]
 
     def get_context_data(self, **kwargs):
@@ -66,10 +66,10 @@ class ColleagueListView(LoginRequiredMixin, ManagerPermMixin, ListView):
         return context
 
 
-class OffboardingColleagueListView(LoginRequiredMixin, ManagerPermMixin, ListView):
+class OffboardingColleagueListView(AdminOrManagerPermMixin, ListView):
     template_name = "offboarding.html"
     queryset = get_user_model().offboarding.all()
-    paginate_by = 20
+    paginate_by = settings.OFFBOARDING_USERS_PAGINATE_BY
     ordering = ["termination_date", "email"]
 
     def get_context_data(self, **kwargs):
@@ -79,9 +79,7 @@ class OffboardingColleagueListView(LoginRequiredMixin, ManagerPermMixin, ListVie
         return context
 
 
-class ColleagueCreateView(
-    LoginRequiredMixin, ManagerPermMixin, SuccessMessageMixin, CreateView
-):
+class ColleagueCreateView(AdminOrManagerPermMixin, SuccessMessageMixin, CreateView):
     template_name = "colleague_create.html"
     model = get_user_model()
     form_class = ColleagueCreateForm
@@ -99,9 +97,7 @@ class ColleagueCreateView(
         return context
 
 
-class ColleagueUpdateView(
-    LoginRequiredMixin, ManagerPermMixin, SuccessMessageMixin, UpdateView
-):
+class ColleagueUpdateView(AdminOrManagerPermMixin, SuccessMessageMixin, UpdateView):
     template_name = "colleague_update.html"
     model = get_user_model()
     form_class = ColleagueUpdateForm
@@ -118,7 +114,7 @@ class ColleagueUpdateView(
         return context
 
 
-class ColleagueHardwareView(LoginRequiredMixin, ManagerPermMixin, DetailView):
+class ColleagueHardwareView(AdminOrManagerPermMixin, DetailView):
     template_name = "add_hardware.html"
     model = get_user_model()
 
@@ -131,7 +127,7 @@ class ColleagueHardwareView(LoginRequiredMixin, ManagerPermMixin, DetailView):
         return context
 
 
-class ColleagueToggleHardwareView(LoginRequiredMixin, ManagerPermMixin, View):
+class ColleagueToggleHardwareView(AdminOrManagerPermMixin, View):
     template_name = "_toggle_button_hardware.html"
 
     def post(self, request, pk, template_id, *args, **kwargs):
@@ -148,7 +144,7 @@ class ColleagueToggleHardwareView(LoginRequiredMixin, ManagerPermMixin, View):
         return render(request, self.template_name, context)
 
 
-class ColleagueResourceView(LoginRequiredMixin, ManagerPermMixin, DetailView):
+class ColleagueResourceView(AdminOrManagerPermMixin, DetailView):
     template_name = "add_resources.html"
     model = get_user_model()
 
@@ -163,7 +159,7 @@ class ColleagueResourceView(LoginRequiredMixin, ManagerPermMixin, DetailView):
         return context
 
 
-class ColleagueToggleResourceView(LoginRequiredMixin, ManagerPermMixin, View):
+class ColleagueToggleResourceView(AdminOrManagerPermMixin, View):
     template_name = "_toggle_button_resources.html"
 
     def post(self, request, pk, template_id, *args, **kwargs):
@@ -180,7 +176,7 @@ class ColleagueToggleResourceView(LoginRequiredMixin, ManagerPermMixin, View):
         return render(request, self.template_name, context)
 
 
-class ColleagueSyncSlack(LoginRequiredMixin, ManagerPermMixin, View):
+class ColleagueSyncSlack(AdminOrManagerPermMixin, View):
     def get(self, request, *args, **kwargs):
         slack_users = Slack().get_all_users()
 
@@ -238,7 +234,7 @@ class ColleagueSyncSlack(LoginRequiredMixin, ManagerPermMixin, View):
         return HttpResponse(headers={"HX-Refresh": "true"})
 
 
-class ColleagueGiveSlackAccessView(LoginRequiredMixin, ManagerPermMixin, View):
+class ColleagueGiveSlackAccessView(AdminOrManagerPermMixin, View):
     template_name = "_toggle_colleague_access.html"
 
     def post(self, request, pk, *args, **kwargs):
@@ -293,7 +289,7 @@ class ColleagueGiveSlackAccessView(LoginRequiredMixin, ManagerPermMixin, View):
         return render(request, self.template_name, context)
 
 
-class ColleagueTogglePortalAccessView(LoginRequiredMixin, ManagerPermMixin, View):
+class ColleagueTogglePortalAccessView(AdminOrManagerPermMixin, View):
     template_name = "_toggle_colleague_access.html"
 
     def post(self, request, pk, *args, **kwargs):
@@ -318,9 +314,7 @@ class ColleagueTogglePortalAccessView(LoginRequiredMixin, ManagerPermMixin, View
         return render(request, self.template_name, context)
 
 
-class AddOffboardingSequenceView(
-    LoginRequiredMixin, AdminPermMixin, SuccessMessageMixin, UpdateView
-):
+class AddOffboardingSequenceView(AdminPermMixin, SuccessMessageMixin, UpdateView):
     template_name = "add_offboarding_sequence.html"
     form_class = OffboardingSequenceChoiceForm
     model = get_user_model()
@@ -382,9 +376,7 @@ class AddOffboardingSequenceView(
         return redirect("people:colleagues")
 
 
-class ColleagueOffboardingSequenceView(
-    LoginRequiredMixin, IsAdminOrNewHireManagerMixin, DetailView
-):
+class ColleagueOffboardingSequenceView(IsAdminOrNewHireManagerMixin, DetailView):
     template_name = "offboarding_detail.html"
     queryset = get_user_model().offboarding.all()
 
@@ -419,7 +411,7 @@ class ColleagueOffboardingSequenceView(
         return context
 
 
-class ColleagueImportView(LoginRequiredMixin, AdminPermMixin, DetailView):
+class ColleagueImportView(AdminPermMixin, DetailView):
     """Generic view to start showing the options based on what it fetched from the
     server
     """
@@ -437,7 +429,7 @@ class ColleagueImportView(LoginRequiredMixin, AdminPermMixin, DetailView):
         return context
 
 
-class ColleagueImportFetchUsersHXView(LoginRequiredMixin, AdminPermMixin, View):
+class ColleagueImportFetchUsersHXView(AdminPermMixin, View):
     """HTMLX view to get all users and return a table"""
 
     def get(self, request, pk, *args, **kwargs):
@@ -462,7 +454,7 @@ class ColleagueImportFetchUsersHXView(LoginRequiredMixin, AdminPermMixin, View):
         )
 
 
-class ColleagueImportIgnoreUserHXView(LoginRequiredMixin, AdminPermMixin, View):
+class ColleagueImportIgnoreUserHXView(AdminPermMixin, View):
     """HTMLX view to put people on the ignore list"""
 
     def post(self, request, *args, **kwargs):
@@ -477,7 +469,7 @@ class ColleagueImportIgnoreUserHXView(LoginRequiredMixin, AdminPermMixin, View):
         return HttpResponse()
 
 
-class ColleagueImportAddUsersView(LoginRequiredMixin, generics.CreateAPIView):
+class ColleagueImportAddUsersView(generics.CreateAPIView):
     permission_classes = (AdminPermission,)
     authentication_classes = [
         SessionAuthentication,
@@ -503,6 +495,4 @@ class ColleagueImportAddUsersView(LoginRequiredMixin, generics.CreateAPIView):
             "Users got imported succesfully. "
             "Admins and managers will receive an email shortly."
         )
-        return HttpResponse(
-            f"<div class='alert alert-success'><p>{success_message}</p></div>"
-        )
+        return HttpResponse(f"<div class='alert alert-success'>{success_message}</div>")

@@ -1,19 +1,20 @@
+from django.conf import settings
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
-from users.mixins import LoginRequiredMixin, ManagerPermMixin
+from users.mixins import AdminOrManagerPermMixin
 
 from .forms import PreboardingForm
 from .models import Preboarding
 
 
-class PreboardingListView(LoginRequiredMixin, ManagerPermMixin, ListView):
+class PreboardingListView(AdminOrManagerPermMixin, ListView):
     template_name = "templates.html"
     queryset = Preboarding.templates.all().order_by("name")
-    paginate_by = 10
+    paginate_by = settings.PREBOARDING_PAGINATE_BY
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -23,9 +24,7 @@ class PreboardingListView(LoginRequiredMixin, ManagerPermMixin, ListView):
         return context
 
 
-class PreboardingCreateView(
-    LoginRequiredMixin, ManagerPermMixin, SuccessMessageMixin, CreateView
-):
+class PreboardingCreateView(AdminOrManagerPermMixin, SuccessMessageMixin, CreateView):
     template_name = "template_update.html"
     form_class = PreboardingForm
     success_url = reverse_lazy("preboarding:list")
@@ -38,9 +37,7 @@ class PreboardingCreateView(
         return context
 
 
-class PreboardingUpdateView(
-    LoginRequiredMixin, ManagerPermMixin, SuccessMessageMixin, UpdateView
-):
+class PreboardingUpdateView(AdminOrManagerPermMixin, SuccessMessageMixin, UpdateView):
     template_name = "template_update.html"
     form_class = PreboardingForm
     success_url = reverse_lazy("preboarding:list")
@@ -54,9 +51,7 @@ class PreboardingUpdateView(
         return context
 
 
-class PreboardingDeleteView(
-    LoginRequiredMixin, ManagerPermMixin, SuccessMessageMixin, DeleteView
-):
+class PreboardingDeleteView(AdminOrManagerPermMixin, SuccessMessageMixin, DeleteView):
     queryset = Preboarding.objects.all()
     success_url = reverse_lazy("preboarding:list")
     success_message = _("Sequence item has been removed")
