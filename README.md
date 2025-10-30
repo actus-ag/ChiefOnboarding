@@ -47,6 +47,31 @@ See details here: [ChiefOnboarding on Docker Hub](https://hub.docker.com/r/chief
 
 [![Deploy on Elestio](https://elest.io/images/logos/deploy-to-elestio-btn.png)](https://elest.io/open-source/chiefonboarding)
 
+## Development
+
+### Quick Start (Gitpod/Ona)
+
+This project is configured to work with Gitpod and Ona environments. After the environment starts:
+
+1. **Install dependencies** - Runs automatically via `install-dependencies` task
+2. **Setup database** - Run the `Setup Database` task manually to:
+   - Run migrations
+   - Collect static files
+   - Create a default admin user
+
+**Default Admin Credentials:**
+- **Username:** `admin`
+- **Email:** `admin@example.com`
+- **Password:** `admin`
+
+⚠️ These are development credentials only. Change them immediately in production environments.
+
+### Services
+
+- **Django Development Server** - Auto-starts on port 8000
+- **PostgreSQL** - Auto-starts on port 5432
+- **Redis** - Auto-starts on port 6379
+
 ## Support
 This software is provided under an open source license and comes as is. If you have any questions, then you will have to open an issue on Github for that. If you want guaranteed, quick support, then we offer a paid support package for that (best effort - generally under 2 hours response time). Please see our [pricing page](https://chiefonboarding.com/pricing) for more details. 
 

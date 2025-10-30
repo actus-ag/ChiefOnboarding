@@ -63,16 +63,11 @@ tasks:
     command: |
       export PATH="/home/vscode/.local/bin:$PATH" && \
       uv run python back/manage.py migrate && \
-      uv run python back/manage.py collectstatic --noinput
-
-  create-superuser:
-    name: Create Django Superuser
-    description: Create an admin user for Django
-    triggeredBy:
-      - manual
-    command: |
-      export PATH="/home/vscode/.local/bin:$PATH" && \
-      uv run python back/manage.py createsuperuser
+      uv run python back/manage.py collectstatic --noinput && \
+      DJANGO_SUPERUSER_USERNAME=admin \
+      DJANGO_SUPERUSER_EMAIL=admin@example.com \
+      DJANGO_SUPERUSER_PASSWORD=admin \
+      uv run python back/manage.py createsuperuser --noinput || echo "Superuser already exists"
 
   run-tests:
     name: Run Tests
