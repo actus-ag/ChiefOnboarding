@@ -1,7 +1,8 @@
 {
-  "name": "ChiefOnboarding",
-  "image": "mcr.microsoft.com/devcontainers/python:3.13-bullseye",
+  "name": "Ubuntu Dev Container",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
   "features": {
+    "ghcr.io/rails/devcontainer/features/bun:1.0.2": {},
     "ghcr.io/devcontainers/features/docker-in-docker:2": {
       "moby": true,
       "dockerDashComposeVersion": "v2"

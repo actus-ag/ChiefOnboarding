@@ -2,29 +2,29 @@
   "mcpServers": {
     "svelte": {
       "name": "svelte",
-      "command": "npx",
-      "args": ["-y", "mcp-remote", "https://mcp.svelte.dev/mcp"],
+      "command": "bunx",
+      "args": ["mcp-remote", "https://mcp.svelte.dev/mcp"],
       "disabled": false,
       "timeout": 60
     },
     "convex": {
       "name": "convex",
-      "command": "npx",
-      "args": ["-y", "convex@latest", "mcp", "start"],
+      "command": "bunx",
+      "args": ["convex@latest", "mcp", "start"],
       "disabled": false,
       "timeout": 60
     },
     "context7": {
       "name": "context7",
-      "command": "npx",
-      "args": ["-y", "mcp-remote", "https://mcp.context7.com/mcp", "--header", "CONTEXT7_API_KEY:ctx7sk-f49c7115-8805-40f2-8037-f9e51d62ef21"],
+      "command": "bunx",
+      "args": ["mcp-remote", "https://mcp.context7.com/mcp", "--header", "CONTEXT7_API_KEY:ctx7sk-f49c7115-8805-40f2-8037-f9e51d62ef21"],
       "disabled": false,
       "timeout": 30
     },
     "playwright": {
       "name": "playwright",
-      "command": "npx",
-      "args": ["-y", "@executeautomation/playwright-mcp-server"],
+      "command": "bunx",
+      "args": ["@executeautomation/playwright-mcp-server"],
       "disabled": false,
       "timeout": 60
     }
