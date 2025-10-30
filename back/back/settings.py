@@ -93,8 +93,6 @@ INSTALLED_APPS = [
     "anymail",
     "django_q",
     "crispy_forms",
-    # mcp
-    "mcp_server",
     # allauth
     "allauth",
     "allauth.account",
