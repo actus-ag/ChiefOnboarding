@@ -65,6 +65,10 @@ tasks:
       - install-dependencies
     command: |
       export PATH="/home/vscode/.local/bin:$PATH" && \
+      if [ ! -f back/.env ]; then \
+        echo "Creating .env file from .env.example..." && \
+        cp back/.env.example back/.env; \
+      fi && \
       uv run python back/manage.py migrate && \
       uv run python back/manage.py collectstatic --noinput && \
       DJANGO_SUPERUSER_USERNAME=admin \
