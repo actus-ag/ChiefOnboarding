@@ -30,14 +30,26 @@ services:
 
   django:
     name: Django Development Server
-    description: Django web application with hot reload
+    description: Django web application with hot reload and database setup
     triggeredBy:
       - postDevcontainerStart
     commands:
       start: |
         export PATH="/home/vscode/.local/bin:$PATH" && \
-        echo "Waiting for database migrations to complete..." && \
-        timeout 300 bash -c 'until uv run python back/manage.py showmigrations 2>&1 | grep -q "\[X\]"; do sleep 2; done' && \
+        echo "Setting up database..." && \
+        if [ ! -f back/.env ]; then \
+          echo "Creating .env file from .env.example..." && \
+          cp back/.env.example back/.env; \
+        fi && \
+        echo "Running migrations..." && \
+        uv run python back/manage.py migrate && \
+        echo "Collecting static files..." && \
+        uv run python back/manage.py collectstatic --noinput && \
+        echo "Creating superuser..." && \
+        DJANGO_SUPERUSER_USERNAME=admin \
+        DJANGO_SUPERUSER_EMAIL=admin@example.com \
+        DJANGO_SUPERUSER_PASSWORD=admin \
+        uv run python back/manage.py createsuperuser --noinput || echo "Superuser already exists" && \
         echo "Database ready, starting Django server..." && \
         gitpod environment port open --name django 8000 && \
         uv run python back/manage.py runserver 0.0.0.0:8000
@@ -56,26 +68,6 @@ tasks:
         curl -LsSf https://astral.sh/uv/install.sh | sh
       fi && \
       uv sync
-
-  setup-database:
-    name: Setup Database
-    description: Run migrations and create initial data
-    triggeredBy:
-      - postDevcontainerStart
-    dependsOn:
-      - install-dependencies
-    command: |
-      export PATH="/home/vscode/.local/bin:$PATH" && \
-      if [ ! -f back/.env ]; then \
-        echo "Creating .env file from .env.example..." && \
-        cp back/.env.example back/.env; \
-      fi && \
-      uv run python back/manage.py migrate && \
-      uv run python back/manage.py collectstatic --noinput && \
-      DJANGO_SUPERUSER_USERNAME=admin \
-      DJANGO_SUPERUSER_EMAIL=admin@example.com \
-      DJANGO_SUPERUSER_PASSWORD=admin \
-      uv run python back/manage.py createsuperuser --noinput || echo "Superuser already exists"
 
   run-tests:
     name: Run Tests

@@ -39,12 +39,20 @@ else:
         slack_handler = SocketModeHandler(app, settings.SLACK_APP_TOKEN)
         slack_handler.connect()
     else:
-        integration = Integration.objects.filter(
-            integration=Integration.Type.SLACK_BOT
-        ).first()
-        app = SlackBoltApp(
-            token=integration.token, signing_secret=integration.signing_secret
-        )
+        try:
+            integration = Integration.objects.filter(
+                integration=Integration.Type.SLACK_BOT
+            ).first()
+            if integration:
+                app = SlackBoltApp(
+                    token=integration.token, signing_secret=integration.signing_secret
+                )
+            else:
+                app = Mock()
+                logger.warning("No Slack integration found, using mock app")
+        except Exception as e:
+            app = Mock()
+            logger.warning(f"Could not initialize Slack app: {e}")
 
 
 def exception_handler(func):
