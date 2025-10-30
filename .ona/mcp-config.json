@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "name": {
+    "svelte": {
       "name": "svelte",
       "command": "npx",
       "args": ["-y", "mcp-remote", "https://mcp.svelte.dev/mcp"],
