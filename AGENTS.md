@@ -144,3 +144,42 @@ python manage.py compilemessages
 - Slack Bolt for Slack integration
 - Django Q2 for background tasks
 - Various other packages in Pipfile
+
+## Ona Automations
+
+The project uses Ona automations (`.ona/automations.yaml`) to manage services and tasks:
+
+### Services
+
+- **postgres**: PostgreSQL database container
+- **redis**: Redis cache for background tasks
+- **playwright**: Playwright browser setup for screenshots and testing (runs on environment start)
+- **django**: Django development server with automatic setup
+
+### Playwright Setup
+
+The `playwright` service automatically installs Playwright browsers and system dependencies when the environment starts. This enables:
+- Screenshot capture capabilities
+- Browser automation for testing
+- Headless browser operations
+
+The service installs:
+- Chromium browser via `bunx playwright install chromium`
+- Required system libraries (X11, graphics, audio, etc.)
+- Version compatibility symlinks for the Playwright Go tool
+
+To manually trigger Playwright setup:
+```bash
+gitpod automations service start playwright
+```
+
+### Available Tasks
+
+- `run-tests`: Run the test suite with pytest
+- `lint`: Run ruff linter
+- `format`: Format code with ruff
+
+To run a task:
+```bash
+gitpod automations task start <task-name>
+```
