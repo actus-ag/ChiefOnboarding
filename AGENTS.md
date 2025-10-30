@@ -4,6 +4,16 @@
 
 ChiefOnboarding is a Django-based employee onboarding platform with Slack integration. The main backend code is in the `back/` directory.
 
+## Memorizing Standards
+
+To permanently memorize project-specific standards, conventions, or patterns:
+
+1. Add them to this AGENTS.md file in the appropriate section
+2. Commit the changes with a descriptive message
+3. The AI agent will automatically read and follow these instructions on future sessions
+
+For more information, see: https://ona.com/docs/ona/agents-md
+
 ## Git Workflow
 
 **IMPORTANT**: Follow this workflow for all changes:
@@ -16,6 +26,19 @@ ChiefOnboarding is a Django-based employee onboarding platform with Slack integr
 2. **Ask Before Push**: ALWAYS ask the user if they want to push after committing
    - Never push automatically
    - Wait for explicit confirmation before running `git push`
+
+## Development Environment
+
+### Auto-Login for Debugging
+
+The project includes a development-only auto-login feature for efficient debugging:
+
+- **Admin credentials**: `admin@example.com` / `admin`
+- **Control**: Set `DEV_AUTO_LOGIN=True` in `.env` to enable automatic login
+- **Production**: Set `DEV_AUTO_LOGIN=False` or omit it entirely for production deployments
+- **Setup command**: `python manage.py setup_dev_environment` creates the organization and admin user
+
+This feature automatically logs you in as the admin user when accessing the application in development mode, eliminating the need for manual login during debugging.
 
 ## Development Commands
 
