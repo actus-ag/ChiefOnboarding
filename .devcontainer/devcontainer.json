@@ -1,10 +1,10 @@
 {
   "name": "ChiefOnboarding",
-  "image": "mcr.microsoft.com/devcontainers/python:3.13",
+  "image": "mcr.microsoft.com/devcontainers/python:3.13-bullseye",
   "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "lts"
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "moby": true,
+      "dockerDashComposeVersion": "v2"
     }
   },
   "runArgs": ["--network=host"],
@@ -14,10 +14,7 @@
         "ms-python.python",
         "ms-python.debugpy",
         "charliermarsh.ruff",
-        "ms-python.black-formatter",
         "batisteo.vscode-django",
-        "mtxr.sqltools",
-        "mtxr.sqltools-driver-pg",
         "bradlc.vscode-tailwindcss",
         "esbenp.prettier-vscode"
       ],
@@ -33,13 +30,7 @@
           }
         },
         "python.testing.pytestEnabled": true,
-        "python.testing.pytestArgs": [
-          "back"
-        ],
-        "files.watcherExclude": {
-          "**/.venv/**": true,
-          "**/node_modules/**": true
-        }
+        "python.testing.pytestArgs": ["back"]
       }
     }
   },
@@ -58,5 +49,6 @@
       "onAutoForward": "silent"
     }
   },
-  "remoteUser": "vscode"
+  "remoteUser": "vscode",
+  "postCreateCommand": "pip install --upgrade pip"
 }
