@@ -51,13 +51,14 @@ See details here: [ChiefOnboarding on Docker Hub](https://hub.docker.com/r/chief
 
 ### Quick Start (Gitpod/Ona)
 
-This project is configured to work with Gitpod and Ona environments. After the environment starts:
+This project is fully configured for one-click setup in Gitpod and Ona environments. When you open the environment, everything is automatically configured:
 
-1. **Install dependencies** - Runs automatically via `install-dependencies` task
-2. **Setup database** - Run the `Setup Database` task manually to:
-   - Run migrations
-   - Collect static files
-   - Create a default admin user
+1. **Dependencies installed** - Python packages via uv
+2. **Services started** - PostgreSQL, Redis, and Django
+3. **Database migrated** - All migrations applied
+4. **Admin user created** - Ready to log in
+
+Just wait for the environment to finish loading (1-2 minutes), then access the application!
 
 **Default Admin Credentials:**
 - **Username:** `admin`
@@ -66,11 +67,12 @@ This project is configured to work with Gitpod and Ona environments. After the e
 
 ⚠️ These are development credentials only. Change them immediately in production environments.
 
-### Services
+### What Runs Automatically
 
-- **Django Development Server** - Auto-starts on port 8000
-- **PostgreSQL** - Auto-starts on port 5432
-- **Redis** - Auto-starts on port 6379
+- **PostgreSQL** - Database server on port 5432
+- **Redis** - Cache server on port 6379
+- **Django Development Server** - Web application on port 8000
+- **Database Setup** - Migrations, static files, and admin user creation
 
 ## Support
 This software is provided under an open source license and comes as is. If you have any questions, then you will have to open an issue on Github for that. If you want guaranteed, quick support, then we offer a paid support package for that (best effort - generally under 2 hours response time). Please see our [pricing page](https://chiefonboarding.com/pricing) for more details. 

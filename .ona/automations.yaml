@@ -36,6 +36,9 @@ services:
     commands:
       start: |
         export PATH="/home/vscode/.local/bin:$PATH" && \
+        echo "Waiting for database migrations to complete..." && \
+        timeout 300 bash -c 'until uv run python back/manage.py showmigrations 2>&1 | grep -q "\[X\]"; do sleep 2; done' && \
+        echo "Database ready, starting Django server..." && \
         uv run python back/manage.py runserver 0.0.0.0:8000
       ready: |
         timeout 60 bash -c 'until curl -s http://localhost:8000 > /dev/null; do sleep 1; done'
@@ -57,7 +60,7 @@ tasks:
     name: Setup Database
     description: Run migrations and create initial data
     triggeredBy:
-      - manual
+      - postDevcontainerStart
     dependsOn:
       - install-dependencies
     command: |
