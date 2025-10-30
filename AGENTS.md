@@ -129,6 +129,50 @@ python manage.py compilemessages
 - Uses ruff for linting and formatting
 - Import sorting enabled in ruff config
 
+## Frontend Validation
+
+**IMPORTANT**: When making changes to frontend code (templates, views, static files, or any user-facing features), you MUST validate the changes visually using Playwright:
+
+1. **Ensure Django server is running** on port 8000
+2. **Navigate to the affected page(s)** using Playwright:
+   ```
+   playwright_navigate to http://localhost:8000/path/to/page
+   ```
+3. **Capture screenshots** to verify the changes:
+   ```
+   playwright_screenshot with fullPage=true and savePng=true
+   ```
+4. **Review the screenshot** to confirm:
+   - Layout renders correctly
+   - New features are visible
+   - No visual regressions
+   - Responsive design works as expected
+   - No console errors (check with playwright_console_logs)
+
+5. **Test interactive elements** if applicable:
+   - Click buttons/links with `playwright_click`
+   - Fill forms with `playwright_fill`
+   - Verify navigation and state changes
+
+**When to validate:**
+- After modifying Django templates (`.html` files)
+- After changing CSS or JavaScript
+- After updating views that affect UI
+- After database migrations that impact displayed data
+- Before committing frontend-related changes
+
+**Example workflow:**
+```bash
+# Make changes to template
+# Ensure server is running (check with: curl http://localhost:8000)
+# Navigate and capture
+playwright_navigate url=http://localhost:8000/admin/people/
+playwright_screenshot name=people-list fullPage=true savePng=true
+# Review screenshot and verify changes
+```
+
+This ensures all frontend changes are visually verified before being committed.
+
 ## Project Structure
 
 - `back/` - Main Django application
