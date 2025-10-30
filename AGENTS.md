@@ -4,6 +4,40 @@
 
 ChiefOnboarding is a Django-based employee onboarding platform with Slack integration. The main backend code is in the `back/` directory.
 
+### How ChiefOnboarding Works
+
+ChiefOnboarding helps companies automate and streamline their employee onboarding process through:
+
+#### Core Concepts
+
+**Sequences**: Timeline-based onboarding paths that map out a new hire's journey. Sequences consist of blocks:
+- **General blocks**: Trigger before/after start date or based on task completion
+- **Unconditioned block**: Items automatically added when sequence is assigned (e.g., preboarding pages)
+- All blocks trigger at 8 AM in the new hire's timezone
+- Supports multiple timezones and languages (EN, DE, FR, ES, PT, TR, JA)
+
+**Templates**: Reusable content items that can be added to sequences:
+- **To Do Items**: Tasks for new hires with due dates, content, and optional forms
+- **Resources**: Information/documentation, can be converted to courses with chapters and quizzes
+- **Introductions**: Introduce colleagues to new hires
+- **Badges**: Motivational rewards for completing milestones
+- **Admin Tasks**: Tasks assigned to colleagues/managers
+- **Messages**: One-off emails/Slack/text messages to new hires, managers, or channels
+
+#### User Roles
+
+- **Administrators**: Full dashboard access, can create/manage everything
+- **Managers**: Limited access to their new hires, templates, and their admin tasks
+- **Employees**: Basic accounts, visible on colleagues page, can access assigned resources
+- **New Hires**: Onboarding participants with access to their tasks, resources, and portal
+
+#### Integration Points
+
+- **Slack Bot**: Primary interface for new hires, sends daily reminders, handles forms/courses
+- **Web Portal**: Standalone alternative to Slack, includes all features
+- **API**: Programmatic new hire creation and management
+- **Auto-creation**: Automatically create new hires when they join Slack (with optional approval)
+
 ## Memorizing Standards
 
 To permanently memorize project-specific standards, conventions, or patterns:
