@@ -32,6 +32,28 @@
         "python.testing.pytestEnabled": true,
         "python.testing.pytestArgs": ["back"]
       }
+    },
+    "gitpod": {
+      "ports": [
+        {
+          "port": 8000,
+          "name": "Django",
+          "visibility": "public",
+          "onOpen": "notify"
+        },
+        {
+          "port": 5432,
+          "name": "PostgreSQL",
+          "visibility": "private",
+          "onOpen": "ignore"
+        },
+        {
+          "port": 6379,
+          "name": "Redis",
+          "visibility": "private",
+          "onOpen": "ignore"
+        }
+      ]
     }
   },
   "forwardPorts": [8000, 5432, 6379],
