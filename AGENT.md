@@ -4,13 +4,18 @@
 
 ChiefOnboarding is a Django-based employee onboarding platform with Slack integration. The main backend code is in the `back/` directory.
 
-## Commit Standards
+## Git Workflow
 
-- **Always use conventional commits format**: `<type>[optional scope]: <description>`
-- Common types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
-- Example: `feat(onboarding): add new hire notification system`
+**IMPORTANT**: Follow this workflow for all changes:
 
-always push after committing
+1. **Automatic Commit**: After completing each task, automatically commit changes with a descriptive message
+   - Use format: `<type>: <description>` with Co-authored-by: Ona <no-reply@ona.com>
+   - Common types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
+   - Example: `feat: add new hire notification system`
+   
+2. **Ask Before Push**: ALWAYS ask the user if they want to push after committing
+   - Never push automatically
+   - Wait for explicit confirmation before running `git push`
 
 ## Development Commands
 
