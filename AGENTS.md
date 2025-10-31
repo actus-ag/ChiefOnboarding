@@ -169,7 +169,10 @@ playwright_screenshot name=people-list fullPage=true savePng=true
 # Review screenshot and verify changes
 ```
 
-This ensures all frontend changes are visually verified before being committed.
+**IMPORTANT - Playwright Cleanup:**
+- **NEVER use `playwright_close`** - This command causes the browser to hang and timeout
+- Playwright sessions will be automatically cleaned up
+- Simply complete your validation and move on without explicit cleanup
 
 ## Project Structure
 
