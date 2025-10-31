@@ -1,0 +1,51 @@
+{
+  "permissions": {
+    "allowed_tools": [
+      "view",
+      "ls",
+      "grep",
+      "mcp_context7_resolve-library-id",
+      "mcp_context7_get-library-docs"
+    ]
+  },
+  "lsp": {
+    "typescript": {
+      "command": "typescript-language-server",
+      "args": ["--stdio"]
+    }
+  },
+  "mcp": {
+    "svelte": {
+      "type": "http",
+      "url": "https://mcp.svelte.dev/mcp",
+      "disabled": false,
+      "timeout": 60
+    },
+    "convex": {
+      "type": "stdio",
+      "command": "bunx",
+      "args": ["convex@latest", "mcp", "start"],
+      "disabled": false,
+      "timeout": 60
+    },
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "ctx7sk-f49c7115-8805-40f2-8037-f9e51d62ef21"
+      },
+      "disabled": false,
+      "timeout": 30
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "bunx",
+      "args": ["@executeautomation/playwright-mcp-server"],
+      "disabled": false,
+      "timeout": 60
+    }
+  },
+  "options": {
+    "disable_metrics": true
+  }
+}
