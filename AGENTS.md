@@ -133,11 +133,11 @@ python manage.py compilemessages
 
 **IMPORTANT**: When making changes to frontend code (templates, views, static files, or any user-facing features), you MUST validate the changes visually using Playwright:
 
-1. **Ensure Django server is running** on port 8000
-2. **Navigate to the affected page(s)** using Playwright:
+1. **Navigate to the affected page(s)** using Playwright:
    ```
    playwright_navigate to http://localhost:8000/path/to/page
    ```
+2. **Interact with the page as needed** to reach the state you want to validate (e.g., log in, fill forms, etc.)
 3. **Capture screenshots** to verify the changes:
    ```
    playwright_screenshot with fullPage=true and savePng=true
@@ -148,7 +148,6 @@ python manage.py compilemessages
    - No visual regressions
    - Responsive design works as expected
    - No console errors (check with playwright_console_logs)
-
 5. **Test interactive elements** if applicable:
    - Click buttons/links with `playwright_click`
    - Fill forms with `playwright_fill`
@@ -164,7 +163,6 @@ python manage.py compilemessages
 **Example workflow:**
 ```bash
 # Make changes to template
-# Ensure server is running (check with: curl http://localhost:8000)
 # Navigate and capture
 playwright_navigate url=http://localhost:8000/admin/people/
 playwright_screenshot name=people-list fullPage=true savePng=true

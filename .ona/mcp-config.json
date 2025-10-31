@@ -17,7 +17,14 @@
     "context7": {
       "name": "context7",
       "command": "bunx",
-      "args": ["mcp-remote", "https://mcp.context7.com/mcp", "--header", "CONTEXT7_API_KEY:ctx7sk-f49c7115-8805-40f2-8037-f9e51d62ef21"],
+      "args": [
+        "mcp-remote",
+        "https://mcp.context7.com/mcp",
+        "--ignore-tool",
+        "playwright_close",
+        "--header",
+        "CONTEXT7_API_KEY:ctx7sk-f49c7115-8805-40f2-8037-f9e51d62ef21"
+      ],
       "disabled": false,
       "timeout": 30
     },
